@@ -1,0 +1,96 @@
+MySQL数据库基础知识测试文档
+
+一、MySQL简介
+MySQL是一种流行的开源关系型数据库管理系统（RDBMS），它支持多种数据类型，包括数值型、日期型、字符串型等。MySQL广泛应用于Web开发领域，是LAMP（Linux、Apache、MySQL、PHP）技术栈的重要组成部分。
+
+二、数据类型
+1. 数值类型
+- INT：标准整数，占用4字节
+- BIGINT：大整数，占用8字节
+- FLOAT：单精度浮点数，占用4字节
+- DOUBLE：双精度浮点数，占用8字节
+- DECIMAL：精确小数，用于存储货币等需要精确计算的数据
+
+2. 字符串类型
+- VARCHAR：可变长度字符串，最大长度65535字符
+- CHAR：固定长度字符串，最大长度255字符
+- TEXT：长文本数据，最大长度65535字符
+- LONGTEXT：更长的文本数据，最大长度4GB
+
+3. 日期时间类型
+- DATE：日期，格式为YYYY-MM-DD
+- TIME：时间，格式为HH:MM:SS
+- DATETIME：日期时间，格式为YYYY-MM-DD HH:MM:SS
+- TIMESTAMP：时间戳，自动记录插入或更新时间
+
+三、基本SQL语句
+1. 创建表
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    age INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+2. 插入数据
+INSERT INTO users (username, email, age) VALUES ('张三', 'zhangsan@example.com', 25);
+
+3. 查询数据
+SELECT * FROM users WHERE age > 18 ORDER BY created_at DESC;
+
+4. 更新数据
+UPDATE users SET age = 26 WHERE username = '张三';
+
+5. 删除数据
+DELETE FROM users WHERE id = 1;
+
+四、索引
+索引是提高查询性能的重要手段。常见的索引类型包括：
+- PRIMARY KEY：主键索引，唯一标识每条记录
+- UNIQUE：唯一索引，确保列值唯一
+- INDEX：普通索引，加速查询
+
+创建索引的语法：
+CREATE INDEX idx_username ON users(username);
+
+五、权限管理
+MySQL的权限管理主要涉及以下几个表：
+- user表：存储全局权限
+- db表：存储数据库级权限
+- tables_priv表：存储表级权限
+- columns_priv表：存储列级权限
+
+授予用户权限的语法：
+GRANT SELECT, INSERT ON database.* TO 'user'@'localhost';
+
+刷新权限：
+FLUSH PRIVILEGES;
+
+六、事务
+事务是一组不可分割的SQL操作，要么全部执行成功，要么全部回滚。事务具有ACID特性：
+- Atomicity（原子性）：事务是一个不可分割的工作单位
+- Consistency（一致性）：事务执行前后数据库状态保持一致
+- Isolation（隔离性）：多个事务之间相互隔离
+- Durability（持久性）：事务提交后数据永久保存
+
+开启事务：
+START TRANSACTION;
+
+提交事务：
+COMMIT;
+
+回滚事务：
+ROLLBACK;
+
+七、存储引擎
+MySQL支持多种存储引擎，常见的有：
+- InnoDB：支持事务和外键，是MySQL 5.5+的默认存储引擎
+- MyISAM：不支持事务，但查询速度快
+- MEMORY：将数据存储在内存中，适合临时表
+
+查看存储引擎：
+SHOW ENGINES;
+
+设置表的存储引擎：
+CREATE TABLE test (id INT) ENGINE=InnoDB;

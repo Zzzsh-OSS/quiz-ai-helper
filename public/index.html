@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>期末复习AI助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        .upload-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 3rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #2980b9;
+            background-color: #f8f9fa;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .quiz-section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .quiz-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 0.5rem;
+        }
+
+        .question-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3498db;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .option:hover {
+            background: #f0f8ff;
+            border-color: #3498db;
+        }
+
+        .option input[type="radio"] {
+            transform: scale(1.2);
+        }
+
+        .option-label {
+            font-size: 1rem;
+        }
+
+        .submit-section {
+            text-align: center;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .submit-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            margin: 0;
+            display: inline-block;
+        }
+
+        .submit-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .review-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            margin: 0;
+            display: inline-block;
+        }
+
+        .review-btn:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+        }
+
+        .review-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .upload-area {
+                padding: 2rem;
+            }
+
+            .submit-section {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .submit-btn,
+            .review-btn {
+                width: auto;
+                min-width: 150px;
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>期末复习AI助手</h1>
+            <p class="subtitle">上传复习资料，智能生成题库，助你高效备考</p>
+        </header>
+
+        <section class="upload-section">
+            <h2 class="quiz-title">上传复习资料</h2>
+            <div class="upload-area">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">点击或拖拽文件到此处上传</div>
+                <div class="upload-hint">支持 .txt 和 .pdf 文件</div>
+            </div>
+        </section>
+
+        <section class="quiz-section">
+            <h2 class="quiz-title">答题区域</h2>
+
+            <div class="question-card">
+                <div class="question-text">1. 下列关于JavaScript的说法，正确的是：</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" name="q1" id="q1-a">
+                        <label for="q1-a" class="option-label">A. JavaScript是一种编译型语言</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q1" id="q1-b">
+                        <label for="q1-b" class="option-label">B. JavaScript只能在浏览器中运行</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q1" id="q1-c">
+                        <label for="q1-c" class="option-label">C. JavaScript是一种脚本语言</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q1" id="q1-d">
+                        <label for="q1-d" class="option-label">D. JavaScript不需要解释器</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-card">
+                <div class="question-text">2. CSS中，用于设置元素宽度的属性是：</div>
+                <div class="options">
+                    <div class="option">
+                        <input type="radio" name="q2" id="q2-a">
+                        <label for="q2-a" class="option-label">A. height</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q2" id="q2-b">
+                        <label for="q2-b" class="option-label">B. width</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q2" id="q2-c">
+                        <label for="q2-c" class="option-label">C. size</label>
+                    </div>
+                    <div class="option">
+                        <input type="radio" name="q2" id="q2-d">
+                        <label for="q2-d" class="option-label">D. length</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="submit-section">
+            <button class="submit-btn">提交答案</button>
+            <button class="review-btn" id="review-btn">复习错题</button>
+            <button class="review-btn" id="clear-wrong-btn">清空错题本</button>
+        </section>
+    </div>
+
+    <script>
+        // 全局变量
+        let questionsData = null;
+        let userAnswers = {};
+        let isReviewMode = false;
+
+        // 文件上传处理
+        const uploadArea = document.querySelector('.upload-area');
+        const quizSection = document.querySelector('.quiz-section');
+        const submitBtn = document.querySelector('.submit-btn');
+        const reviewBtn = document.getElementById('review-btn');
+
+        // 创建文件输入框
+        let fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = '.txt,.pdf';
+        fileInput.style.display = 'none';
+        document.body.appendChild(fileInput);
+
+        // 绑定点击事件
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#2980b9';
+            uploadArea.style.backgroundColor = '#e3f2fd';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#3498db';
+            uploadArea.style.backgroundColor = '#f8f9fa';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#3498db';
+            uploadArea.style.backgroundColor = '#f8f9fa';
+
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                handleFile(file);
+            }
+        });
+
+        // 绑定文件选择事件
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const file = e.target.files[0];
+                handleFile(file);
+                // 重置文件输入框，避免重复选择同一文件时不触发 change 事件
+                e.target.value = '';
+            }
+        });
+
+        async function handleFile(file) {
+            const allowedTypes = ['.txt', '.pdf'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+
+            if (allowedTypes.includes(fileExtension)) {
+                console.log('上传文件:', file.name);
+
+                // 显示加载状态
+                const loadingHTML = '<div class="upload-icon">⏳</div><div class="upload-text">正在处理文件...</div>';
+                const originalContent = uploadArea.innerHTML;
+                uploadArea.innerHTML = loadingHTML;
+
+                try {
+                    // 创建 FormData 并添加文件
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    // 发送请求到后端
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('文件处理失败');
+                    }
+
+                    const data = await response.json();
+                    console.log('生成的题目:', data);
+
+                    // 保存题目数据
+                    questionsData = data;
+                    // 重置用户答案
+                    userAnswers = {};
+
+                    // 显示题目
+                    displayQuestions(data);
+
+                    // 恢复上传区域
+                    uploadArea.innerHTML = originalContent;
+                } catch (error) {
+                    console.error('上传失败:', error);
+                    alert('文件处理失败，请重试');
+                    // 恢复上传区域
+                    uploadArea.innerHTML = originalContent;
+                }
+            } else {
+                alert('请上传 .txt 或 .pdf 文件');
+            }
+        }
+
+        function displayQuestions(questionsData) {
+            // 清空现有题目
+            quizSection.innerHTML = '<h2 class="quiz-title">答题区域</h2>';
+
+            // 解析题目数据
+            let questions;
+            try {
+                // 确保数据是 JSON 对象
+                if (typeof questionsData === 'string') {
+                    questions = JSON.parse(questionsData);
+                } else {
+                    questions = questionsData;
+                }
+            } catch (error) {
+                console.error('解析题目数据失败:', error);
+                quizSection.innerHTML += '<div class="question-card"><div class="question-text">生成题目失败，请重试</div></div>';
+                return;
+            }
+
+            // 显示题目
+            if (questions.questions && Array.isArray(questions.questions)) {
+                questions.questions.forEach((question, index) => {
+                    const questionCard = document.createElement('div');
+                    questionCard.className = 'question-card';
+                    questionCard.dataset.index = index;
+
+                    let questionHTML = `<div class="question-text">${index + 1}. ${question.question}</div>`;
+
+                    if (question.type === 'multiple_choice') {
+                        questionHTML += '<div class="options">';
+                        question.options.forEach((option, optIndex) => {
+                            const optionLetter = String.fromCharCode(65 + optIndex); // A, B, C, D
+                            // 检查选项内容是否已经包含字母前缀（如 "A. " 或 "A."）
+                            let displayOption = option;
+                            // 移除可能存在的前缀
+                            displayOption = displayOption.replace(/^[A-Z]\s*\.\s*/, '');
+                            // 添加正确的前缀
+                            displayOption = `${optionLetter}. ${displayOption}`;
+                            questionHTML += `
+                                <label style="display: block; padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 8px; cursor: pointer; transition: all 0.2s ease;" for="q${index + 1}-${optionLetter}">
+                                    <input type="radio" name="question_${index}" id="q${index + 1}-${optionLetter}" value="${optionLetter}" style="margin-right: 8px;">
+                                    ${displayOption}
+                                </label>
+                            `;
+                        });
+                        questionHTML += '</div>';
+
+                    } else if (question.type === 'true_false') {
+                        questionHTML += '<div class="options">';
+                        questionHTML += `
+                            <label style="display: block; padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 8px; cursor: pointer; transition: all 0.2s ease;" for="q${index + 1}-true">
+                                <input type="radio" name="question_${index}" id="q${index + 1}-true" value="true" style="margin-right: 8px;">
+                                正确
+                            </label>
+                            <label style="display: block; padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 8px; cursor: pointer; transition: all 0.2s ease;" for="q${index + 1}-false">
+                                <input type="radio" name="question_${index}" id="q${index + 1}-false" value="false" style="margin-right: 8px;">
+                                错误
+                            </label>
+                        `;
+                        questionHTML += '</div>';
+
+                    } else if (question.type === 'short_answer') {
+                        questionHTML += '<div class="options">';
+                        questionHTML += `
+                            <textarea id="q${index + 1}-textarea" style="width: 100%; padding: 0.8rem; border: 1px solid #e0e0e0; border-radius: 6px; resize: vertical; min-height: 100px;" placeholder="请输入答案..."></textarea>
+                        `;
+                        questionHTML += '</div>';
+                    }
+
+                    questionCard.innerHTML = questionHTML;
+                    quizSection.appendChild(questionCard);
+
+                    // 添加事件监听器
+                    addAnswerListeners(index, question.type);
+                });
+            } else {
+                // 兼容其他格式
+                quizSection.innerHTML += '<div class="question-card"><div class="question-text">生成题目失败，请重试</div></div>';
+            }
+        }
+
+        function addAnswerListeners(questionIndex, questionType) {
+            if (questionType === 'multiple_choice' || questionType === 'true_false') {
+                const radios = document.querySelectorAll(`input[name="question_${questionIndex}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        userAnswers[questionIndex] = e.target.value;
+                        console.log('用户答案:', userAnswers);
+                    });
+                });
+            } else if (questionType === 'short_answer') {
+                const textarea = document.getElementById(`q${questionIndex + 1}-textarea`);
+                if (textarea) {
+                    textarea.addEventListener('input', (e) => {
+                        userAnswers[questionIndex] = e.target.value;
+                        console.log('用户答案:', userAnswers);
+                    });
+                }
+            }
+        }
+
+        // 提交答案处理
+        submitBtn.addEventListener('click', () => {
+            if (!questionsData) {
+                alert('请先上传文件生成题目');
+                return;
+            }
+
+            let questions;
+            try {
+                if (typeof questionsData === 'string') {
+                    questions = JSON.parse(questionsData);
+                } else {
+                    questions = questionsData;
+                }
+            } catch (error) {
+                console.error('解析题目数据失败:', error);
+                alert('题目数据错误，请重试');
+                return;
+            }
+
+            if (!questions.questions || !Array.isArray(questions.questions)) {
+                alert('题目数据错误，请重试');
+                return;
+            }
+
+            // 计算得分
+            let score = 0;
+            const totalQuestions = questions.questions.length;
+            const results = [];
+            const wrongQuestions = [];
+
+            questions.questions.forEach((question, index) => {
+                const userAnswer = userAnswers[index];
+                const correctAnswer = question.correct_answer || question.answer;
+                const isCorrect = compareAnswers(userAnswer, correctAnswer, question.type);
+
+                if (isCorrect) {
+                    score++;
+                } else {
+                    // 收集错题
+                    wrongQuestions.push({
+                        ...question,
+                        userAnswer: userAnswer
+                    });
+                }
+
+                results.push({
+                    question: question.question,
+                    userAnswer: userAnswer,
+                    correctAnswer: correctAnswer,
+                    isCorrect: isCorrect,
+                    explanation: question.explanation || question.analysis || ''
+                });
+            });
+
+            // 保存错题到 localStorage
+            if (wrongQuestions.length > 0) {
+                saveWrongQuestions(wrongQuestions);
+            }
+
+            // 显示结果
+            showResults(score, totalQuestions, results);
+        });
+
+        function compareAnswers(userAnswer, correctAnswer, questionType) {
+            if (!userAnswer || !correctAnswer) return false;
+
+            if (questionType === 'multiple_choice') {
+                return userAnswer === correctAnswer.toString();
+            } else if (questionType === 'true_false') {
+                // 判断题：用户答案可能是 'true'/'false'，正确答案可能是 '正确'/'错误' 或 'true'/'false'
+                const userBool = userAnswer === 'true' || userAnswer === '正确';
+                const correctBool = correctAnswer === 'true' || correctAnswer === '正确';
+                return userBool === correctBool;
+            } else if (questionType === 'short_answer') {
+                return userAnswer.toLowerCase().includes(correctAnswer.toLowerCase());
+            }
+
+            return false;
+        }
+
+        function showResults(score, totalQuestions, results) {
+            // 清除重新提交按钮
+            const submitSection = document.querySelector('.submit-section');
+            const existingResubmitBtns = submitSection.querySelectorAll('.resubmit-btn');
+            existingResubmitBtns.forEach(btn => btn.remove());
+
+            // 创建结果面板
+            const resultPanel = document.createElement('div');
+            resultPanel.className = 'quiz-section';
+            resultPanel.style.marginTop = '2rem';
+
+            let resultHTML = `
+                <h2 class="quiz-title">答题结果</h2>
+                <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <h3 style="color: #2c3e50; margin-bottom: 1rem;">得分: ${score}/${totalQuestions}</h3>
+                    <p style="color: #7f8c8d;">正确率: ${Math.round((score / totalQuestions) * 100)}%</p>
+                </div>
+            `;
+
+            // 添加每题的结果
+            results.forEach((result, index) => {
+                const statusClass = result.isCorrect ? 'correct' : 'incorrect';
+                const statusText = result.isCorrect ? '正确' : '错误';
+                const statusColor = result.isCorrect ? '#27ae60' : '#e74c3c';
+
+                resultHTML += `
+                    <div class="question-card">
+                        <div class="question-text">${index + 1}. ${result.question}</div>
+                        <div style="margin-top: 0.8rem;">
+                            <p><strong>你的答案:</strong> ${result.userAnswer || '未作答'}</p>
+                            <p><strong>正确答案:</strong> ${result.correctAnswer}</p>
+                            <p style="color: ${statusColor}; font-weight: 500;">状态: ${statusText}</p>
+                            ${result.explanation ? `<p><strong>解析:</strong> ${result.explanation}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultPanel.innerHTML = resultHTML;
+
+            // 清空答题区域并添加结果
+            quizSection.innerHTML = '';
+            quizSection.appendChild(resultPanel);
+        }
+
+        // 保存错题到 localStorage
+        function saveWrongQuestions(wrongQuestions) {
+            try {
+                // 每次都从 localStorage 实时读取，确保获取最新数据
+                const existingWrongQuestions = JSON.parse(localStorage.getItem('wrongBook') || '[]');
+
+                // 合并新错题，避免重复
+                const mergedWrongQuestions = [...existingWrongQuestions];
+
+                // 检查是否已经存在相同的题目，避免重复保存
+                wrongQuestions.forEach(newQuestion => {
+                    // 统一字段名，确保数据一致性
+                    const normalizedQuestion = {
+                        ...newQuestion,
+                        correct_answer: newQuestion.correct_answer || newQuestion.answer || '',
+                        type: newQuestion.type || ''
+                    };
+
+                    // 移除可能的重复字段
+                    if (normalizedQuestion.answer && normalizedQuestion.answer !== normalizedQuestion.correct_answer) {
+                        delete normalizedQuestion.answer;
+                    }
+
+                    const isDuplicate = existingWrongQuestions.some(existingQuestion =>
+                        existingQuestion.question === normalizedQuestion.question
+                    );
+                    if (!isDuplicate) {
+                        mergedWrongQuestions.push(normalizedQuestion);
+                    }
+                });
+
+                // 保存到 localStorage
+                localStorage.setItem('wrongBook', JSON.stringify(mergedWrongQuestions));
+                console.log('错题已保存到 localStorage');
+            } catch (error) {
+                console.error('保存错题失败:', error);
+            }
+        }
+
+        // 复习错题按钮点击事件
+        reviewBtn.addEventListener('click', () => {
+            showWrongQuestions();
+        });
+
+        // 清空错题本按钮点击事件
+        const clearWrongBtn = document.getElementById('clear-wrong-btn');
+        clearWrongBtn.addEventListener('click', () => {
+            if (confirm('确定要清空错题本吗？')) {
+                localStorage.removeItem('wrongBook');
+                alert('错题本已清空');
+                // 立即更新界面
+                showWrongQuestions();
+            }
+        });
+
+        // 显示错题
+        function showWrongQuestions() {
+            try {
+                // 设置复习模式
+                isReviewMode = true;
+
+                // 从 localStorage 获取错题
+                const wrongBook = JSON.parse(localStorage.getItem('wrongBook') || '[]');
+
+                if (wrongBook.length === 0) {
+                    quizSection.innerHTML = '<h2 class="quiz-title">错题本</h2><p style="text-align: center; color: #7f8c8d; margin-top: 2rem;">暂无错题</p>';
+                } else {
+                    // 清空现有内容
+                    quizSection.innerHTML = '<h2 class="quiz-title">错题本</h2>';
+
+                    // 显示错题
+                    wrongBook.forEach((question, index) => {
+                        const questionCard = document.createElement('div');
+                        questionCard.className = 'question-card';
+                        questionCard.dataset.index = index;
+
+                        let questionHTML = `<div class="question-text">${index + 1}. ${question.question}</div>`;
+
+                        // 统一处理题目类型
+                        const questionType = question.type || '';
+
+                        if (questionType === 'multiple_choice' || questionType === 'choice') {
+                            questionHTML += '<div class="options">';
+                            if (question.options && Array.isArray(question.options)) {
+                                question.options.forEach((option, optIndex) => {
+                                    const optionLetter = String.fromCharCode(65 + optIndex); // A, B, C, D
+                                    // 检查选项内容是否已经包含字母前缀（如 "A. " 或 "A."）
+                                    let displayOption = option;
+                                    // 移除可能存在的前缀
+                                    displayOption = displayOption.replace(/^[A-Z]\s*\.\s*/, '');
+                                    // 添加正确的前缀
+                                    displayOption = `${optionLetter}. ${displayOption}`;
+                                    questionHTML += `
+                                        <label style="display: block; padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 8px; cursor: pointer; transition: all 0.2s ease;" for="review_q_${index}_${optionLetter}">
+                                            <input type="radio" name="review_q_${index}" id="review_q_${index}_${optionLetter}" value="${optionLetter}" style="margin-right: 8px;">
+                                            ${displayOption}
+                                        </label>
+                                    `;
+                                });
+                            }
+                            questionHTML += '</div>';
+
+                        } else if (questionType === 'true_false' || questionType === 'judge') {
+                            questionHTML += '<div class="options">';
+                            questionHTML += `
+                                <label style="display: block; padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 8px; cursor: pointer; transition: all 0.2s ease;" for="review_q_${index}_true">
+                                    <input type="radio" name="review_q_${index}" id="review_q_${index}_true" value="true" style="margin-right: 8px;">
+                                    正确
+                                </label>
+                                <label style="display: block; padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 8px; cursor: pointer; transition: all 0.2s ease;" for="review_q_${index}_false">
+                                    <input type="radio" name="review_q_${index}" id="review_q_${index}_false" value="false" style="margin-right: 8px;">
+                                    错误
+                                </label>
+                            `;
+                            questionHTML += '</div>';
+
+                        } else if (questionType === 'short_answer' || questionType === 'short') {
+                            questionHTML += '<div class="options">';
+                            questionHTML += `
+                                <textarea id="review_q_${index}_textarea" style="width: 100%; padding: 0.8rem; border: 1px solid #e0e0e0; border-radius: 6px; resize: vertical; min-height: 100px;" placeholder="请输入答案..."></textarea>
+                            `;
+                            questionHTML += '</div>';
+                        }
+
+                        questionCard.innerHTML = questionHTML;
+                        quizSection.appendChild(questionCard);
+                    });
+
+                    // 清除之前的重新提交按钮
+                    const submitSection = document.querySelector('.submit-section');
+                    const existingResubmitBtns = submitSection.querySelectorAll('.resubmit-btn');
+                    existingResubmitBtns.forEach(btn => btn.remove());
+
+                    // 添加重新提交按钮
+                    const resubmitBtn = document.createElement('button');
+                    resubmitBtn.className = 'submit-btn resubmit-btn';
+                    resubmitBtn.textContent = '重新提交错题';
+                    resubmitBtn.style.marginRight = '1rem';
+                    resubmitBtn.style.marginTop = '0';
+                    resubmitBtn.addEventListener('click', () => {
+                        resubmitWrongQuestions(wrongBook);
+                    });
+
+                    submitSection.appendChild(resubmitBtn);
+                }
+
+                // 控制按钮显示
+                updateButtonsVisibility();
+
+                // 添加返回答题按钮
+                const submitSection = document.querySelector('.submit-section');
+                const existingBackBtns = submitSection.querySelectorAll('.back-btn');
+                existingBackBtns.forEach(btn => btn.remove());
+
+                const backBtn = document.createElement('button');
+                backBtn.className = 'review-btn back-btn';
+                backBtn.textContent = '返回答题';
+                backBtn.style.marginRight = '1rem';
+                backBtn.style.marginTop = '0';
+                backBtn.style.display = 'inline-block';
+                backBtn.addEventListener('click', () => {
+                    backToQuiz();
+                });
+
+                submitSection.appendChild(backBtn);
+
+            } catch (error) {
+                console.error('显示错题失败:', error);
+                alert('获取错题失败，请重试');
+            }
+        }
+
+        // 控制按钮显示
+        function updateButtonsVisibility() {
+            const submitSection = document.querySelector('.submit-section');
+            const originalSubmitBtn = submitSection.querySelector('.submit-btn:not(.resubmit-btn):not(.back-btn)');
+
+            if (isReviewMode) {
+                // 复习模式下隐藏原始的提交答案按钮
+                if (originalSubmitBtn) {
+                    originalSubmitBtn.style.display = 'none';
+                }
+            } else {
+                // 答题模式下显示原始的提交答案按钮
+                if (originalSubmitBtn) {
+                    originalSubmitBtn.style.display = 'inline-block';
+                }
+            }
+        }
+
+        // 返回答题
+        function backToQuiz() {
+            // 退出复习模式
+            isReviewMode = false;
+
+            // 清除返回答题按钮和重新提交按钮
+            const submitSection = document.querySelector('.submit-section');
+            const existingBackBtns = submitSection.querySelectorAll('.back-btn');
+            const existingResubmitBtns = submitSection.querySelectorAll('.resubmit-btn');
+            existingBackBtns.forEach(btn => btn.remove());
+            existingResubmitBtns.forEach(btn => btn.remove());
+
+            // 恢复提交答案按钮的显示
+            const submitBtn = submitSection.querySelector('.submit-btn:not(.resubmit-btn)');
+            if (submitBtn) {
+                submitBtn.style.display = 'inline-block';
+            }
+
+            // 控制按钮显示
+            updateButtonsVisibility();
+
+            // 重新显示答题区域
+            if (questionsData && questionsData.questions && questionsData.questions.length > 0) {
+                // 使用已有的 displayQuestions 函数重新渲染题目
+                displayQuestions(questionsData);
+            } else {
+                // 否则显示初始状态
+                quizSection.innerHTML = '<h2 class="quiz-title">答题区域</h2><p style="text-align: center; color: #7f8c8d; margin-top: 2rem;">请先上传文件生成题目</p>';
+            }
+        }
+
+        // 重新提交错题
+        function resubmitWrongQuestions(wrongBook) {
+            const userAnswers = {};
+            const results = [];
+            const stillWrong = [];
+
+            wrongBook.forEach((question, index) => {
+                const questionType = question.type || '';
+
+                if (questionType === 'multiple_choice' || questionType === 'choice' || questionType === 'true_false' || questionType === 'judge') {
+                    const selectedRadio = document.querySelector(`input[name="review_q_${index}"]:checked`);
+                    userAnswers[index] = selectedRadio ? selectedRadio.value : null;
+                } else if (questionType === 'short_answer' || questionType === 'short') {
+                    const textarea = document.getElementById(`review_q_${index}_textarea`);
+                    userAnswers[index] = textarea ? textarea.value : '';
+                }
+
+                // 统一获取正确答案，确保字段一致性
+                const correctAnswer = question.correctAnswer || question.correct_answer || question.answer || '';
+                const isCorrect = compareAnswers(userAnswers[index], correctAnswer, questionType);
+
+                // 只保留仍然答错的题目
+                if (!isCorrect) {
+                    stillWrong.push(question);
+                }
+
+                results.push({
+                    question: question.question || '',
+                    userAnswer: userAnswers[index],
+                    correctAnswer: correctAnswer,
+                    isCorrect: isCorrect,
+                    explanation: question.explanation || question.analysis || '暂无'
+                });
+            });
+
+            // 更新错题本，移除已经答对的题目
+            localStorage.setItem('wrongBook', JSON.stringify(stillWrong));
+
+            // 计算得分
+            const score = results.filter(result => result.isCorrect).length;
+            const totalQuestions = results.length;
+
+            // 显示结果
+            showResults(score, totalQuestions, results);
+
+            // 显示更新后的错题列表
+            setTimeout(() => {
+                showWrongQuestions();
+            }, 2000); // 2秒后刷新错题列表
+        }
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 确保提交按钮初始可见
+            const submitBtn = document.querySelector('.submit-btn');
+            if (submitBtn) {
+                submitBtn.style.display = 'inline-block';
+            }
+
+            // 清空错题本按钮不需要隐藏
+            const clearWrongBtn = document.getElementById('clear-wrong-btn');
+            if (clearWrongBtn) {
+                clearWrongBtn.style.display = 'inline-block';
+            }
+        });
+    </script>
+</body>
+</html>
