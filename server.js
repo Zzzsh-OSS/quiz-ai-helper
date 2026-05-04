@@ -7,12 +7,30 @@ const pdf = require('pdf-parse');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 确保 uploads 文件夹存在
-const uploadDir = path.join(__dirname, 'uploads');
+// ============ 修改开始 ============
+// 在 Vercel 上，只能用 /tmp 目录来存放临时文件
+// 注意：/tmp 在每次函数调用之间不保证持久化，但对于临时上传文件足够了
+
+const uploadDir = '/tmp/uploads';
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
-    console.log('创建 uploads 文件夹');
+    console.log('创建 uploads 文件夹在:', uploadDir);
 }
+
+// 配置 multer 使用 /tmp/uploads 作为临时目录
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, '/tmp/uploads')
+    },
+    filename: function (req, file, cb) {
+        // 生成唯一文件名，避免冲突
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + '-' + file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage });
+// ============ 修改结束 ============
 
 // 请求日志中间件
 app.use((req, res, next) => {
@@ -25,9 +43,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // 解析 JSON 请求体
 app.use(express.json());
-
-// 配置 multer 存储
-const upload = multer({ dest: 'uploads/' });
 
 // 根路由
 app.get('/', (req, res) => {
@@ -77,14 +92,13 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         }
 
         // 生成题目（可以基于提取的文本内容生成，或者返回测试题目）
-        // 这里先返回修复后的测试题目
         const testQuestions = {
             questions: [
                 {
                     question: 'MySQL 中，哪个数据类型用于存储整数？',
                     type: 'multiple_choice',
                     options: ['VARCHAR', 'INT', 'TEXT', 'DATE'],
-                    correct_answer: 'B',  // 修复：使用选项字母而不是选项内容
+                    correct_answer: 'B',
                     explanation: 'INT 是 MySQL 中的整数数据类型，用于存储标准整数值。'
                 },
                 {
@@ -97,7 +111,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
                     question: 'SQL 中用于查询数据的关键字是什么？',
                     type: 'multiple_choice',
                     options: ['INSERT', 'UPDATE', 'SELECT', 'DELETE'],
-                    correct_answer: 'C',  // 修复：使用选项字母而不是选项内容
+                    correct_answer: 'C',
                     explanation: 'SELECT 关键字用于从数据库表中查询数据。'
                 },
                 {
@@ -122,8 +136,10 @@ app.post('/upload', upload.single('file'), async (req, res) => {
         res.status(500).json({ error: error.message });
     } finally {
         // 处理完删除临时文件，避免堆积
-        if (req.file) {
-            fs.unlink(req.file.path, () => {});
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlink(req.file.path, (err) => {
+                if (err) console.error('删除临时文件失败:', err);
+            });
         }
     }
 });
